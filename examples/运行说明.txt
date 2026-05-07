@@ -23,8 +23,8 @@ Excel 可视化工作流 — 简要说明
         [Environment]::GetEnvironmentVariable('VIRTUAL_ENV','User')
         [Environment]::GetEnvironmentVariable('VIRTUAL_ENV','Machine')
       若有值指向本仓库，在「系统属性 → 环境变量」里删除 VIRTUAL_ENV / 关闭错误 conda 环境。
-   c) 运行仓库根目录脚本（对比「在 C:\ 下启动」与「在本目录启动」的 prefix）：
-        powershell -ExecutionPolicy Bypass -File .\diagnose_python.ps1
+   c) 对比解释器 prefix（在 PowerShell 中先 `cd C:\` 再执行与在项目根目录执行，看 `sys.prefix` 是否异常）：
+        py -3.11 -c "import sys; print(sys.prefix, sys.executable)"
    d) 用资源管理器检查是否存在（若内容把 home 指到本仓库，应改正或删除后重装 Anaconda）：
         D:\anaconda3\pyvenv.cfg
         D:\anaconda3\python311._pth 或 python._pth
@@ -34,11 +34,11 @@ Excel 可视化工作流 — 简要说明
 
    若 echo $env:PYTHONHOME 有值：本会话 Remove-Item Env:PYTHONHOME 后重试；并在系统环境变量里删除 PYTHONHOME。
 
-   可选：install_workflow_deps.ps1 仅清除本会话 PYTHONHOME/PYTHONPATH，对「未设置 PYTHONHOME 仍错」无效。
+   可选：在同一 PowerShell 会话先清除再装依赖（仅对「本会话误设了 PYTHONHOME」有效）：
+        Remove-Item Env:PYTHONHOME,Env:PYTHONPATH -ErrorAction SilentlyContinue
+        py -3.11 -m pip install -r requirements-workflow.txt
 
-   f) 若确认 D:\anaconda3 中 Python 已损坏：见 examples\Anaconda修复或卸载.txt ，或运行交互脚本
-        powershell -ExecutionPolicy Bypass -File .\uninstall_anaconda.ps1
-      （优先官方卸载；可选清理用户 PATH；整目录删除需输入确认语。）
+   f) 若确认 D:\anaconda3 中 Python 已损坏：见 examples\Anaconda修复或卸载.txt ，按其中顺序用官方卸载或手动删目录并清理 PATH。
 
 1. 安装（必须用 Python 3.10+，不要用系统自带的 Python 3.7）
    若已安装多个版本，推荐用启动器指定 3.11/3.12：

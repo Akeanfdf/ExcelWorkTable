@@ -133,10 +133,7 @@ excel表格/
 ├── examples/                # 运行说明、模板 JSON、密钥示例、排障文档
 │   ├── 运行说明.txt         # 团队快速开始与常见 Python 环境问题
 │   └── templates/           # 内置 workflow 等参考
-├── scripts/                 # 如 export_builtin_templates.py
-├── diagnose_python.ps1
-├── install_workflow_deps.ps1
-└── uninstall_anaconda.ps1
+└── scripts/                 # 如 export_builtin_templates.py
 ```
 
 ---
