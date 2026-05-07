@@ -1,0 +1,21 @@
+{
+  "data_file": "C:/Users/CY/Desktop/数据源1.xlsx",
+  "tmpl_file": "C:/Users/CY/Desktop/副本02030104钢结构（高强螺栓连接）检验批质量验收记录.xlsx",
+  "output_dir": "D:/输出表单",
+  "name_col": "检验批容量",
+  "sheet_name": "1234",
+  "mapping": [
+    [
+      "检验批容量",
+      "Y7"
+    ],
+    [
+      "分项工程名称",
+      "Y6"
+    ],
+    [
+      "",
+      ""
+    ]
+  ]
+}

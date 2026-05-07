@@ -1,0 +1,59 @@
+Anaconda 3.11 损坏（prefix 随 cwd 变化、找不到 encodings）— 处理说明
+================================================================================
+
+一、能否「在线修复」？
+  当前 D:\anaconda3\python.exe 已不按正常方式加载 D:\anaconda3\Lib 标准库，
+  用该解释器再跑 conda / pip 往往同样失败，很难在「坏掉的 python」上自举修复。
+  实际可行做法：① 用官方卸载程序卸掉再重装；② 或改用 python.org 独立安装。
+
+二、推荐顺序（安全）
+  1. 关闭所有 VS Code、终端、占用 D:\anaconda3 的程序。
+  2. 优先运行「官方卸载」：
+     资源管理器打开 D:\anaconda3 ，查找 Uninstall-Anaconda3.exe（或 Anaconda 安装目录里的卸载项），
+     或在「设置 → 应用 → 已安装的应用」里搜索 Anaconda / Miniconda 卸载。
+  3. 卸载完成后，检查环境变量 PATH 里是否还有 D:\anaconda3、Scripts、Library\bin 等条目，
+     手动删除残留（用户变量 + 系统变量都看一眼）。
+  4. 若卸载程序删不干净，再考虑手动删除整个 D:\anaconda3 文件夹（需无进程占用）。
+
+二（补充）卸载时报错：「D:\anaconda3 不是一个有效的 conda 目录」
+  含义：卸载程序要在该目录下找到完整的 conda 元数据（例如 conda-meta、正常目录结构）。
+        你当前安装已损坏或残缺，卸载程序拒绝继续——这是常见情况，不是操作错误。
+  处理（按顺序试）：
+  A) Windows「设置 → 应用 → 已安装的应用」里搜索 Anaconda / Miniconda，
+     点「卸载」。有时走 Windows 卸载通道，不依赖目录里 conda 是否完整。
+  B) 若 A 也没有或失败：只能「手动删除文件夹」当作清理残留。
+     - 关闭 VS Code、终端、所有可能用 Python 的软件；必要时注销/重启后再删。
+     - 资源管理器删除 D:\anaconda3；若提示占用，用任务管理器结束 python.exe / conda.exe 再删。
+     - 删不掉时：用「管理员」打开 PowerShell，再执行本仓库 uninstall_anaconda.ps1 选 3，
+       或右键文件夹 → 属性 → 安全 → 取得所有权后再删（高级用户）。
+  C) 删完务必清理环境变量 PATH 里所有 D:\anaconda3、...\Scripts、...\Library\bin 等条目
+     （用户变量 + 系统变量），或用 uninstall_anaconda.ps1 选 2 清理用户 PATH。
+  D) 不必再纠结「修复旧目录」：之后如需 conda，请重新下载安装包装到新路径（如 D:\miniconda3）。
+
+三、用仓库里的脚本（交互式）
+  在项目根目录执行：
+    powershell -ExecutionPolicy Bypass -File .\uninstall_anaconda.ps1
+  脚本会：
+    - 尝试启动官方卸载程序（若找到）；
+    - 可选：从「用户 PATH」中去掉含 anaconda3 的条目（需确认）；
+    - 可选：在输入确认语后整目录删除 D:\anaconda3（危险操作，请谨慎）。
+
+四、卸载 / 删除后
+  1. 安装 python.org 的 3.11+：运行安装程序时选「Customize installation」，
+     在下一步把「安装路径」改到**非 C 盘**、全英文目录，例如 `D:\Python311` 或 `E:\Python311`
+     （勿用默认的 `C:\Users\...\AppData\Local\Programs\Python` 若你希望不占 C 盘）。
+
+  快速安装（一条命令，需「管理员」打开 PowerShell；机器上要有 winget，Win10/11 常见）：
+  · 装到 E 盘（不占 C 盘；若要 D 盘把两处 E:\Python311 改成 D:\Python311）：
+      winget install -e --id Python.Python.3.11 --accept-package-agreements --accept-source-agreements --override "/passive InstallAllUsers=0 TargetDir=E:\Python311 PrependPath=1 Include_test=0 Include_pip=1"
+  · 接受默认安装位置（多数在用户目录下，通常仍在 C 盘用户文件夹里，仅适合不介意占 C 盘时）：
+      winget install -e --id Python.Python.3.11 --accept-package-agreements --accept-source-agreements
+  · 无 winget 时：从 https://www.python.org/downloads/windows/ 下载 64 位安装包，双击安装并在向导里改路径；或下载后在同目录执行（路径按实际 exe 名改）：
+      .\python-3.11.9-amd64.exe /passive InstallAllUsers=0 TargetDir=E:\Python311 PrependPath=1 Include_test=0 Include_pip=1
+
+  2. 若仍要用 conda，请重新下载 Miniconda/Anaconda 安装包，装到纯英文路径（如 D:\miniconda3）。
+
+五、本工作流项目
+  删除 Anaconda 后，把下面路径换成你**实际上一步的安装目录**（示例用 E 盘，若装在 D 盘则改为 D:\Python311）：
+    E:\Python311\python.exe -m pip install -r requirements-workflow.txt
+    E:\Python311\python.exe -m excel_workflow.app
